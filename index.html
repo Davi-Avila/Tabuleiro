@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de Quadro de Galton</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="hero">
+      <h1>Simulador de Quadro de Galton</h1>
+      <p>
+        Cada bolinha cai por uma fileira de pinos. Em <strong>cada colisão</strong> ela tem
+        50% de chance de ir para a esquerda e 50% para a direita. Depois de várias fileiras,
+        o compartimento final é a soma dessas decisões independentes, o que gera uma
+        <strong>distribuição binomial</strong>. Com muitas bolinhas, essa distribuição se
+        aproxima da <strong>curva normal</strong> (curva de sino).
+      </p>
+    </header>
+
+    <main class="layout">
+
+      <!-- Coluna principal: quadro + histograma -->
+      <div class="col col--main">
+        <section class="panel board-panel" aria-label="Quadro de Galton">
+          <div id="boardWrap" class="canvas-wrap">
+            <canvas id="boardCanvas" role="img"
+                    aria-label="Quadro de Galton com pinos em formato triangular e compartimentos na base"></canvas>
+          </div>
+        </section>
+
+        <section class="panel hist-panel" aria-label="Histograma">
+          <div class="panel-head">
+            <h2>Histograma dos compartimentos</h2>
+            <label class="switch">
+              <input type="checkbox" id="theoryToggle" checked>
+              <span>Curva teórica</span>
+            </label>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="histCanvas" role="img"
+                    aria-label="Histograma com a quantidade de bolinhas em cada compartimento"></canvas>
+          </div>
+          <ul class="legend">
+            <li><i class="sw sw--bar"></i>Observado</li>
+            <li><i class="sw sw--curve"></i>Normal teórica</li>
+            <li><i class="sw sw--dot"></i>Binomial esperada</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Coluna lateral: controles + estatísticas -->
+      <div class="col col--side">
+        <section class="panel controls" aria-label="Controles">
+          <div class="panel-head">
+            <h2>Controles</h2>
+            <span id="statusBadge" class="badge" data-state="idle" role="status" aria-live="polite">Parada</span>
+          </div>
+
+          <div class="field">
+            <div class="field-row">
+              <label for="ballsRange">Quantidade de bolinhas</label>
+              <output id="ballsValue" for="ballsRange">1.000</output>
+            </div>
+            <input type="range" id="ballsRange" min="10" max="10000" step="10" value="1000">
+            <div class="chips" id="presetChips">
+              <button type="button" class="chip" data-value="100">100</button>
+              <button type="button" class="chip" data-value="500">500</button>
+              <button type="button" class="chip" data-value="1000">1.000</button>
+              <button type="button" class="chip" data-value="10000">10.000</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-row">
+              <label for="rowsRange">Fileiras de pinos</label>
+              <output id="rowsValue" for="rowsRange">12</output>
+            </div>
+            <input type="range" id="rowsRange" min="6" max="16" step="1" value="12">
+          </div>
+
+          <div class="field">
+            <div class="field-row">
+              <label for="speedRange">Velocidade da animação</label>
+              <output id="speedValue" for="speedRange">1,0×</output>
+            </div>
+            <input type="range" id="speedRange" min="0.25" max="4" step="0.25" value="1">
+          </div>
+
+          <div class="buttons">
+            <button type="button" id="btnStart" class="btn btn--primary">Iniciar simulação</button>
+            <button type="button" id="btnPause" class="btn" disabled>Pausar</button>
+            <button type="button" id="btnRestart" class="btn">Reiniciar</button>
+            <button type="button" id="btnClear" class="btn btn--ghost">Limpar</button>
+          </div>
+        </section>
+
+        <section class="panel stats" aria-label="Estatísticas">
+          <div class="panel-head"><h2>Estatísticas</h2></div>
+
+          <div class="progress" aria-hidden="true"><div id="progressBar" class="progress-bar"></div></div>
+          <p class="progress-text"><span id="progressText">0%</span> concluído</p>
+
+          <dl class="stat-grid">
+            <div><dt>Total de bolinhas</dt><dd id="statTotal">0</dd></div>
+            <div><dt>Já finalizadas</dt><dd id="statDone">0</dd></div>
+            <div><dt>Animadas agora</dt><dd id="statActive">0</dd></div>
+            <div><dt>Em segundo plano</dt><dd id="statBackground">0</dd></div>
+            <div><dt>Compartimentos</dt><dd id="statBins">13</dd></div>
+            <div><dt>Mais frequente</dt><dd id="statMode">–</dd></div>
+            <div class="wide"><dt>Média (nº do compartimento)</dt><dd id="statMean">–</dd></div>
+            <div class="wide"><dt>Desvio padrão</dt><dd id="statSd">–</dd></div>
+          </dl>
+
+          <p class="note">
+            Para manter a página fluida, no máximo 600 bolinhas são animadas ao mesmo tempo.
+            As demais passam pelo mesmo sorteio esquerda/direita em cada fileira, só que sem desenhar o trajeto
+            (&ldquo;em segundo plano&rdquo;), então a estatística continua correta.
+          </p>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
